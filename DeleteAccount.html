@@ -1,16 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delete Account</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DeleteAccount</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #f0f0f0;
+}
+
+.container {
+  text-align: center;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+input[type="text"] {
+  padding: 10px;
+  width: 300px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+#result {
+  margin-top: 20px;
+  font-size: 1.2em;
+  color: green;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 150px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+</style>
+  
 </head>
 <body>
-    <h1>Delete Your Account</h1>
-    <form action="/delete-account" method="post">
-        <label for="email">Enter your email address:</label><br>
-        <input type="email" id="email" name="email" required><br><br>
-        <button type="submit">Request Account Deletion</button>
+  <div class="container">
+    <h1 class="tooltip">Enter Your Email to be Deleted <span class="tooltiptext">From Mandeep Academy (within 90 days)</span></h1>
+    <form id="textForm">
+      <input type="email" id="inputText" placeholder="Enter email" required>
+      <button type="submit">Request for Account Deletion</button>
     </form>
+    <div id="result"></div>
+  </div>
+
+<script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js';
+    import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js';
+
+    // Firebase Configuration - Replace with your Firebase project config
+const firebaseConfig = {
+  apiKey: "AIzaSyASrLrCGpNLdVgDGlWeSe-rS1ua0tiX7Cg",
+  authDomain: "schoollibfirebase.firebaseapp.com",
+  projectId: "schoollibfirebase",
+  storageBucket: "schoollibfirebase.appspot.com",
+  messagingSenderId: "2612450368",
+  appId: "1:2612450368:web:be5cac04a0e9d9d2e17ba5"
+};
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Get references to the DOM elements
+    const textForm = document.getElementById('textForm');
+    const inputText = document.getElementById('inputText');
+    const resultDiv = document.getElementById('result');
+
+    // Handle form submission
+    textForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      
+      // Get the input value
+      const text = inputText.value.trim();
+      
+      if (text) {
+        try {
+          // Add a new document to Firestore
+          const docRef = await addDoc(collection(db, 'userstodel'), {
+            email: text,
+            createdAt: serverTimestamp()
+          });
+
+          // Display success message
+          resultDiv.textContent = `Your user has been added to deletion list.`;
+          inputText.value = ''; // Clear input
+        } catch (error) {
+          resultDiv.textContent = `Error! Please try again or contact your school.`;
+        }
+      } else {
+        resultDiv.textContent = 'Please enter your email!';
+      }
+    });
+  </script>
 </body>
 </html>
